@@ -10,7 +10,24 @@ app.use(fileupload())
 const taskRoutes = require("./routes/task")
  const authRoutes =require("./routes/Auth")
  const UsertaskRoutes = require("./routes/Usertask")
-mongoose.connect("mongodb://localhost:27017/task-app");
+//mongoose.connect("mongodb://localhost:27017/task-app");
+require('dotenv').config();
+
+// Check the MongoDB URI
+console.log("MongoDB URI:", process.env.MONGODB_URI);
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/task-app", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    tls: true,
+    ssl: true,
+    // sslValidate: false, // only if you're using self-signed certificates
+}).then(() => {
+    console.log("Connected to MongoDB");
+}).catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+});
 
 app.use("/uploads",express.static('uploads'))
 app.use("/task",taskRoutes)
