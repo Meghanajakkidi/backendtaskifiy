@@ -1,18 +1,24 @@
 const express = require("express");
-
+const UsertaskModel = require("../models/Usertask")
 const router = express.Router();
 const mongoose = require("mongoose");
 const Taskmodels = require("../models/task");
 
 router.get("/summary",async function(req, res){
    let TotalCount = await Taskmodels.Taskmodels.find({}).count();
-   let InProgressCount = await Taskmodels.Taskmodels.find({status:"inprogress"}).count();
-   let CompletedCount = await Taskmodels.Taskmodels.find({status: "completed"}).count();
-   let NotStartedCount = await Taskmodels.Taskmodels.find({status: "not_started"}).count();
-   res.send({TotalCount, InProgressCount, CompletedCount, NotStartedCount});
+   let assigntaskcount = await Taskmodels.Taskmodels.find({assigned:true}).count();
+   let available = await Taskmodels.Taskmodels.find({assigned:false}).count();
+   let InProgressCount = await  UsertaskModel.find({status:"inprogress"}).count();
+   let CompletedCount = await UsertaskModel.find({status: "completed"}).count();
+   {/*let NotStartedCount = await Taskmodels.Taskmodels.find({status: "not_started"}).count();*/}
+   res.send({TotalCount,available,assigntaskcount, InProgressCount, CompletedCount});
 });
 
-
+router.get("/available", async function(req,res){
+   let tasks = await Taskmodels.Taskmodels.find({assigned:{"$ne":"true"}})
+ // res.status(200).json(tasks)
+  res.send(tasks)
+})
 
 router.get("/all", async function(req,res){
    let tasks = await Taskmodels.Taskmodels.find({assigned:{"$ne":"true"}})

@@ -8,11 +8,17 @@ const Authmodel = require("../models/Auth");
 const userTask = require("../models/Usertask");
 
 
-
+router.get("/summary/:userId", async function(req,res){
+    console.log(req.params.userId)
+    let InProgressCount = await UsertaskModel.find({$and:[{status: "inprogress"},{userId:new mongoose.Types.ObjectId(req.params.userId)}]}).count();
+    let CompletedCount = await UsertaskModel.find({$and:[{userId:new mongoose.Types.ObjectId(req.params.userId)},{status:'completed'}]}).count();
+    res.send({ InProgressCount, CompletedCount});
+})
 router.get("/myTask/:userId",async function(req,res){
     let myTasks = await UsertaskModel.find({userId:req.params.userId}).populate("taskId","taskName taskDesc").exec();
     res.send(myTasks)
 })
+
 router.get("/:userId/byStatus/:status",async function(req,res){
     const {status} = req.params;
     if(status==="All"){
